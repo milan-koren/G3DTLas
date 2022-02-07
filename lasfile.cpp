@@ -187,7 +187,7 @@ bool LasFile::createCompatible(QString fileName, LasFile &lasTemplate, qint64 po
  * \brief Standard file signature.
  * \return Las-file signature string ("LASF").
  */
-inline QString LasFile::fileSignature()
+inline QString LasFile::getFileSignature()
 {
     return this->header.getFileSignature();
 }
@@ -198,7 +198,7 @@ inline QString LasFile::fileSignature()
  * \return Major verion of las-file.
  * \remark Inline function.
  */
-inline quint8 LasFile::majorVersion()
+inline quint8 LasFile::getMajorVersion()
 {
     return this->header.versionMajor;
 }
@@ -209,7 +209,7 @@ inline quint8 LasFile::majorVersion()
  * \return Minor verion of las-file.
  * \remark Inline function.
  */
-inline quint8 LasFile::minorVersion()
+inline quint8 LasFile::getMinorVersion()
 {
     return this->header.versionMinor;
 }
@@ -219,7 +219,7 @@ inline quint8 LasFile::minorVersion()
  * \brief Reads major and minor version from las-file and combines them into version string.
  * \return Version string (major.minor).
  */
-QString LasFile::fileVersion()
+QString LasFile::getFileVersion()
 {
     return QString::number(this->header.versionMajor) + "." + QString::number(this->header.versionMinor);
 }
@@ -230,7 +230,7 @@ QString LasFile::fileVersion()
  * \return Identification of hardware or process used to generate point cloud.
  * \value scanner name; MERGE; MODIFICATION; EXTRACTION; TRANSFORMATION; OTHER
  */
-inline QString LasFile::systemID()
+inline QString LasFile::getSystemID()
 {
     return this->header.getSystemID();
 }
@@ -240,7 +240,7 @@ inline QString LasFile::systemID()
  * \brief Generating software.
  * \return Name of generating software.
  */
-inline QString LasFile::generatingSoftware()
+inline QString LasFile::getGeneratingSoftware()
 {
     return this->header.getGeneratingSoftware();
 }
@@ -250,7 +250,7 @@ inline QString LasFile::generatingSoftware()
  * \brief Day-of-year of file creation.
  * \return LAS-file creation day of the year (DOY).
  */
-inline quint16 LasFile::creationDOY()
+inline quint16 LasFile::getCreationDOY()
 {
     return this->header.creationDayOfYear;
 }
@@ -260,7 +260,7 @@ inline quint16 LasFile::creationDOY()
  * \brief Year of file creation.
  * \return Year of the las-file creation.
  */
-inline quint16 LasFile::creationYear()
+inline quint16 LasFile::getCreationYear()
 {
     return this->header.creationYear;
 }
@@ -270,7 +270,7 @@ inline quint16 LasFile::creationYear()
  * \brief Date of creation.
  * \return File creation date in formast dd.MM.yyy.
  */
-QString LasFile::creationDate()
+QString LasFile::getCreationDate()
 {
     QDate dt;
 
@@ -287,7 +287,7 @@ QString LasFile::creationDate()
  * \brief Header size in bytes.
  * \return Size of the las-file this->header.
  */
-inline quint16 LasFile::headerSize()
+inline quint16 LasFile::getHeaderSize()
 {
     return this->header.headerSize;
 }
@@ -297,7 +297,7 @@ inline quint16 LasFile::headerSize()
  * \brief Offset to point data in bytes.
  * \return Offset to point data from the las-file beginning.
  */
-inline quint32 LasFile::offsetToPointData()
+inline quint32 LasFile::getOffsetToPointData()
 {
     return this->header.offset_to_point_data;
 }
@@ -307,7 +307,7 @@ inline quint32 LasFile::offsetToPointData()
  * \brief Number of VLRs.
  * \return Number of variable length records (VLR).
  */
-inline quint32 LasFile::numberOfVLRs()
+inline quint32 LasFile::getNumberOfVLRs()
 {
     return this->header.number_of_vlrs;
 }
@@ -317,7 +317,7 @@ inline quint32 LasFile::numberOfVLRs()
  * \brief Number of EVLRs.
  * \return Number of extended variable length records (EVLR).
  */
-inline quint32 LasFile::numberOfEVLRs()
+inline quint32 LasFile::getNumberOfEVLRs()
 {
     return this->header.number_of_evlrs;
 }
@@ -327,7 +327,7 @@ inline quint32 LasFile::numberOfEVLRs()
  * \brief The code of point format.
  * \return Format of points in las-file (0-10 form LAS 1.4).
  */
-inline quint8 LasFile::pointFormat()
+inline quint8 LasFile::getPointFormat()
 {
     return this->header.point_format;
 }
@@ -337,7 +337,7 @@ inline quint8 LasFile::pointFormat()
  * \brief The length of point record in bytes.
  * \return Point record length in the file.
  */
-inline quint16 LasFile::pointRecordLength()
+inline quint16 LasFile::getPointRecordLength()
 {
     return this->header.point_record_length;
 }
@@ -347,7 +347,7 @@ inline quint16 LasFile::pointRecordLength()
  * \brief The standard length of point record in bytes.
  * \return Record length of point defined by standard (may be shorter than actual point record length in the file).
  */
-inline quint16 LasFile::standardPointRecordLength()
+inline quint16 LasFile::getStandardPointRecordLength()
 {
     return LasFile::StandardPointRecordLength[this->header.point_format];
 }
@@ -357,7 +357,7 @@ inline quint16 LasFile::standardPointRecordLength()
  * \brief The number of points in the las-file.
  * \return Number of points stored in the las-file.
  */
-inline quint64 LasFile::numberOfPoints()
+inline quint64 LasFile::getNumberOfPoints()
 {
     return this->header.number_of_points;
 }
@@ -367,7 +367,7 @@ inline quint64 LasFile::numberOfPoints()
  * \brief The number of point by return fields.
  * \return Number of fields used to store the number of points by returns.
  */
-inline quint32 LasFile::numberOfPointByReturnFields()
+inline quint32 LasFile::getNumberOfPointByReturnFields()
 {
     return LAS14_NUMBER_OF_POINTS_BY_RETURN_FIELDS;
 }
@@ -378,7 +378,7 @@ inline quint32 LasFile::numberOfPointByReturnFields()
  * \param n Return number.
  * \return Number of points by n-th return.
  */
-quint64 LasFile::pointsByReturn(qint64 n)
+quint64 LasFile::getPointsByReturn(qint64 n)
 {
     if (0 <= n && n <= LAS14_NUMBER_OF_POINTS_BY_RETURN_FIELDS)
         return this->header.number_of_points_by_return[n];
@@ -666,7 +666,7 @@ bool LasFile::appendPoints(LasFile &las)
     if (0 < this->header.number_of_evlrs) return false;
     if (las.header.point_format != this->header.point_format || las.header.point_record_length != this->header.point_record_length) return false;
 
-    nPoints = qint64(las.numberOfPoints());
+    nPoints = qint64(las.getNumberOfPoints());
     for(iPoint=0; iPoint<nPoints && !error; iPoint++)
     {
         error = !las.readPoint(iPoint, lasPoint);
@@ -992,7 +992,7 @@ void LasFile::decodeExtraData(char *buf, LasPoint &lasPoint)
 {
     quint32 standardRecordLength;
 
-    standardRecordLength = standardPointRecordLength();
+    standardRecordLength = getStandardPointRecordLength();
     if (standardRecordLength < this->header.point_record_length)
     {
         lasPoint.extraDataLength = standardRecordLength - this->header.point_record_length;
@@ -1253,7 +1253,7 @@ void LasFile::encodeExtraData(LasPoint &lasPoint, char *buf)
 {
     if (0 < lasPoint.extraDataLength)
     {
-        memcpy(buf + standardPointRecordLength(), lasPoint.extraData, lasPoint.extraDataLength);
+        memcpy(buf + getStandardPointRecordLength(), lasPoint.extraData, lasPoint.extraDataLength);
     }
 }
 
@@ -1344,7 +1344,7 @@ bool LasFile::copyVRLs(LasFile &lasTemplate)
     qint64 iVLR;
     LasVLR vlr;
 
-    for(iVLR=0; iVLR < lasTemplate.numberOfVLRs() && !error; iVLR++)
+    for(iVLR=0; iVLR < lasTemplate.getNumberOfVLRs() && !error; iVLR++)
     {
         error = !lasTemplate.readVLR(iVLR, vlr);
         if (!error) error = !appendVLR(vlr);
