@@ -4,7 +4,6 @@
  * *****************************************************************
  *                               G3DTLas
  * *****************************************************************
- * \file lasevlr.cpp
  *
  * \brief Extended variable-length record.
  * \remark There is nothing to implement yet.
