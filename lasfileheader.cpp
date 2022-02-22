@@ -4,7 +4,6 @@
  * *****************************************************************
  *                               G3DTLas
  * *****************************************************************
- * \file lasfileheader.cpp
  *
  * \brief The implemenation of the LasFileHeader14 class.
  *
