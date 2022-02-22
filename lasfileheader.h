@@ -10,7 +10,6 @@
  * *****************************************************************
  *                               G3DTLas
  * *****************************************************************
- * \file lasfile.h
  *
  * \brief LAS file headers.
  * \remark Class LasFileHeader11
@@ -210,7 +209,7 @@ public:
     double z1; //!< max z
     double z0; //!< min z
     quint64 offset_waveform; //!< offset of the first waveform data package record
-    quint64 offset_evlrs; //!< offset of the first extended variable length records
+    quint64 offset_evlrs;    //!< offset of the first extended variable length record
     quint32 number_of_evlrs;
     quint64 number_of_points;
     quint64 number_of_points_by_return[LAS14_NUMBER_OF_POINTS_BY_RETURN_FIELDS];
