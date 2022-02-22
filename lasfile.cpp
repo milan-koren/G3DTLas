@@ -4,7 +4,6 @@
  * *****************************************************************
  *                               G3DTLas
  * *****************************************************************
- * \file lasfile.cpp
  *
  * \brief The implementation of the LasFile class.
  * \remark The class LasPoint is used to access and update data.
@@ -66,14 +65,14 @@ bool LasFile::open(QString fileName, qint64 pointcache_number_of_records, qint64
     bool error = true;
 
     close();
-    this->file.setFileName(fileName);
-    if (this->file.open(QFile::ReadWrite))
-        if (this->header.read(file))
+    this->dataFile.setFileName(fileName);
+    if (this->dataFile.open(QFile::ReadWrite))
+        if (this->dataFileHeader.read(dataFile))
         {
-            if (this->header.point_format <= 10)
+            if (this->dataFileHeader.point_format <= 10)
             {
-                this->point_to_buf_fn = PointToBufferFunctions[this->header.point_format];
-                this->point_from_buf_fn = PointFromBufferFunctions[this->header.point_format];
+                this->pointToBufFn = PointToBufferFunctions[this->dataFileHeader.point_format];
+                this->pointFromBufFn = PointFromBufferFunctions[this->dataFileHeader.point_format];
                 error = false;
             }
         }
@@ -98,10 +97,10 @@ bool LasFile::close()
     if (!error) error = !updateHeader();
     if (!error) error = !writeHeader();
 
-    if (this->cache != nullptr)
+    if (this->cacheData != nullptr)
     {
-        delete [] this->cache;
-        this->cache = nullptr;
+        delete [] this->cacheData;
+        this->cacheData = nullptr;
     }
 
     this->cacheFirstRecord = -1;
@@ -110,8 +109,8 @@ bool LasFile::close()
     this->cacheLength = 0;
     this->cacheOffset = 0;
 
-    if (this->file.isOpen()) this->file.close();
-    this->header.setNull();
+    if (this->dataFile.isOpen()) this->dataFile.close();
+    this->dataFileHeader.setNull();
 
     return !error;
 }
@@ -123,7 +122,7 @@ bool LasFile::close()
  */
 inline bool LasFile::isOpen()
 {
-    return this->file.isOpen();
+    return this->dataFile.isOpen();
 }
 
 
@@ -142,34 +141,34 @@ bool LasFile::createCompatible(QString fileName, LasFile &lasTemplate, qint64 po
     QFile::remove(fileName);
     if (!lasTemplate.isOpen()) return false;
 
-    this->file.setFileName(fileName);
-    if (this->file.open(QFile::ReadWrite))
+    this->dataFile.setFileName(fileName);
+    if (this->dataFile.open(QFile::ReadWrite))
     {
-        this->header.setFileSignature();
-        this->header.globalEncoding = lasTemplate.header.globalEncoding;
-        this->header.versionMajor = 1;
-        this->header.versionMinor = 4;
-        this->header.setSystemID("OTHER");
-        this->header.setGeneratingSoftware("G3DTLas");
+        this->dataFileHeader.setFileSignature();
+        this->dataFileHeader.globalEncoding = lasTemplate.dataFileHeader.globalEncoding;
+        this->dataFileHeader.versionMajor = 1;
+        this->dataFileHeader.versionMinor = 4;
+        this->dataFileHeader.setSystemID("OTHER");
+        this->dataFileHeader.setGeneratingSoftware("G3DTLas");
         dt = QDate::currentDate();
-        this->header.creationDayOfYear = quint16(dt.dayOfYear());
-        this->header.creationYear = quint16(dt.year());
-        this->header.headerSize = sizeof(LasFileHeader14);
-        this->header.offset_to_point_data = sizeof(LasFileHeader14);
-        this->header.number_of_evlrs = 0;
-        this->header.point_format = lasTemplate.header.point_format;
-        if (this->header.point_format <= 10)
+        this->dataFileHeader.creationDayOfYear = quint16(dt.dayOfYear());
+        this->dataFileHeader.creationYear = quint16(dt.year());
+        this->dataFileHeader.headerSize = sizeof(LasFileHeader14);
+        this->dataFileHeader.offset_to_point_data = sizeof(LasFileHeader14);
+        this->dataFileHeader.number_of_evlrs = 0;
+        this->dataFileHeader.point_format = lasTemplate.dataFileHeader.point_format;
+        if (this->dataFileHeader.point_format <= 10)
         {
-            this->point_to_buf_fn = PointToBufferFunctions[this->header.point_format];
-            this->point_from_buf_fn = PointFromBufferFunctions[this->header.point_format];
+            this->pointToBufFn = PointToBufferFunctions[this->dataFileHeader.point_format];
+            this->pointFromBufFn = PointFromBufferFunctions[this->dataFileHeader.point_format];
         }
-        this->header.point_record_length = lasTemplate.header.point_record_length;
-        this->header.scale_x = lasTemplate.header.scale_x;
-        this->header.scale_y = lasTemplate.header.scale_y;
-        this->header.scale_z = lasTemplate.header.scale_z;
-        this->header.offset_x = lasTemplate.header.offset_x;
-        this->header.offset_y = lasTemplate.header.offset_y;
-        this->header.offset_z = lasTemplate.header.offset_z;
+        this->dataFileHeader.point_record_length = lasTemplate.dataFileHeader.point_record_length;
+        this->dataFileHeader.scale_x = lasTemplate.dataFileHeader.scale_x;
+        this->dataFileHeader.scale_y = lasTemplate.dataFileHeader.scale_y;
+        this->dataFileHeader.scale_z = lasTemplate.dataFileHeader.scale_z;
+        this->dataFileHeader.offset_x = lasTemplate.dataFileHeader.offset_x;
+        this->dataFileHeader.offset_y = lasTemplate.dataFileHeader.offset_y;
+        this->dataFileHeader.offset_z = lasTemplate.dataFileHeader.offset_z;
 
         this->headerChanged = true;
         error = (!writeHeader()); // write partial las-file header
@@ -189,7 +188,7 @@ bool LasFile::createCompatible(QString fileName, LasFile &lasTemplate, qint64 po
  */
 inline QString LasFile::getFileSignature()
 {
-    return this->header.getFileSignature();
+    return this->dataFileHeader.getFileSignature();
 }
 
 
@@ -200,7 +199,7 @@ inline QString LasFile::getFileSignature()
  */
 inline quint8 LasFile::getMajorVersion()
 {
-    return this->header.versionMajor;
+    return this->dataFileHeader.versionMajor;
 }
 
 
@@ -211,7 +210,7 @@ inline quint8 LasFile::getMajorVersion()
  */
 inline quint8 LasFile::getMinorVersion()
 {
-    return this->header.versionMinor;
+    return this->dataFileHeader.versionMinor;
 }
 
 
@@ -221,7 +220,7 @@ inline quint8 LasFile::getMinorVersion()
  */
 QString LasFile::getFileVersion()
 {
-    return QString::number(this->header.versionMajor) + "." + QString::number(this->header.versionMinor);
+    return QString::number(this->dataFileHeader.versionMajor) + "." + QString::number(this->dataFileHeader.versionMinor);
 }
 
 
@@ -232,7 +231,7 @@ QString LasFile::getFileVersion()
  */
 inline QString LasFile::getSystemID()
 {
-    return this->header.getSystemID();
+    return this->dataFileHeader.getSystemID();
 }
 
 
@@ -242,7 +241,7 @@ inline QString LasFile::getSystemID()
  */
 inline QString LasFile::getGeneratingSoftware()
 {
-    return this->header.getGeneratingSoftware();
+    return this->dataFileHeader.getGeneratingSoftware();
 }
 
 
@@ -252,7 +251,7 @@ inline QString LasFile::getGeneratingSoftware()
  */
 inline quint16 LasFile::getCreationDOY()
 {
-    return this->header.creationDayOfYear;
+    return this->dataFileHeader.creationDayOfYear;
 }
 
 
@@ -262,7 +261,7 @@ inline quint16 LasFile::getCreationDOY()
  */
 inline quint16 LasFile::getCreationYear()
 {
-    return this->header.creationYear;
+    return this->dataFileHeader.creationYear;
 }
 
 
@@ -274,10 +273,10 @@ QString LasFile::getCreationDate()
 {
     QDate dt;
 
-    if (0 < this->header.creationDayOfYear)
+    if (0 < this->dataFileHeader.creationDayOfYear)
     {
-        dt.setDate(this->header.creationYear, 1, 1);
-        dt = dt.addDays(this->header.creationDayOfYear - 1);
+        dt.setDate(this->dataFileHeader.creationYear, 1, 1);
+        dt = dt.addDays(this->dataFileHeader.creationDayOfYear - 1);
     }
     return dt.toString("dd.MM.yyyy");
 }
@@ -289,7 +288,7 @@ QString LasFile::getCreationDate()
  */
 inline quint16 LasFile::getHeaderSize()
 {
-    return this->header.headerSize;
+    return this->dataFileHeader.headerSize;
 }
 
 
@@ -299,7 +298,7 @@ inline quint16 LasFile::getHeaderSize()
  */
 inline quint32 LasFile::getOffsetToPointData()
 {
-    return this->header.offset_to_point_data;
+    return this->dataFileHeader.offset_to_point_data;
 }
 
 
@@ -309,7 +308,7 @@ inline quint32 LasFile::getOffsetToPointData()
  */
 inline quint32 LasFile::getNumberOfVLRs()
 {
-    return this->header.number_of_vlrs;
+    return this->dataFileHeader.number_of_vlrs;
 }
 
 
@@ -319,7 +318,7 @@ inline quint32 LasFile::getNumberOfVLRs()
  */
 inline quint32 LasFile::getNumberOfEVLRs()
 {
-    return this->header.number_of_evlrs;
+    return this->dataFileHeader.number_of_evlrs;
 }
 
 
@@ -329,7 +328,7 @@ inline quint32 LasFile::getNumberOfEVLRs()
  */
 inline quint8 LasFile::getPointFormat()
 {
-    return this->header.point_format;
+    return this->dataFileHeader.point_format;
 }
 
 
@@ -339,7 +338,7 @@ inline quint8 LasFile::getPointFormat()
  */
 inline quint16 LasFile::getPointRecordLength()
 {
-    return this->header.point_record_length;
+    return this->dataFileHeader.point_record_length;
 }
 
 
@@ -349,7 +348,7 @@ inline quint16 LasFile::getPointRecordLength()
  */
 inline quint16 LasFile::getStandardPointRecordLength()
 {
-    return LasFile::StandardPointRecordLength[this->header.point_format];
+    return LasFile::StandardPointRecordLength[this->dataFileHeader.point_format];
 }
 
 
@@ -359,7 +358,7 @@ inline quint16 LasFile::getStandardPointRecordLength()
  */
 inline quint64 LasFile::getNumberOfPoints()
 {
-    return this->header.number_of_points;
+    return this->dataFileHeader.number_of_points;
 }
 
 
@@ -381,7 +380,7 @@ inline quint32 LasFile::getNumberOfPointByReturnFields()
 quint64 LasFile::getPointsByReturn(qint64 n)
 {
     if (0 <= n && n <= LAS14_NUMBER_OF_POINTS_BY_RETURN_FIELDS)
-        return this->header.number_of_points_by_return[n];
+        return this->dataFileHeader.number_of_points_by_return[n];
     return 0;
 }
 
@@ -392,7 +391,7 @@ quint64 LasFile::getPointsByReturn(qint64 n)
  */
 inline double LasFile::getX0()
 {
-    return this->header.x0;
+    return this->dataFileHeader.x0;
 }
 
 
@@ -402,7 +401,7 @@ inline double LasFile::getX0()
  */
 inline double LasFile::getY0()
 {
-    return this->header.y0;
+    return this->dataFileHeader.y0;
 }
 
 /*!
@@ -411,7 +410,7 @@ inline double LasFile::getY0()
  */
 inline double LasFile::getZ0()
 {
-    return this->header.z0;
+    return this->dataFileHeader.z0;
 }
 
 /*!
@@ -420,7 +419,7 @@ inline double LasFile::getZ0()
  */
 inline double LasFile::getX1()
 {
-    return this->header.x1;
+    return this->dataFileHeader.x1;
 }
 
 /*!
@@ -429,7 +428,7 @@ inline double LasFile::getX1()
  */
 inline double LasFile::getY1()
 {
-    return this->header.y1;
+    return this->dataFileHeader.y1;
 }
 
 /*!
@@ -438,7 +437,7 @@ inline double LasFile::getY1()
  */
 inline double LasFile::getZ1()
 {
-    return this->header.z1;
+    return this->dataFileHeader.z1;
 }
 
 /*!
@@ -447,7 +446,7 @@ inline double LasFile::getZ1()
  */
 bool LasFile::hasWaveform()
 {
-    return (this->header.point_format == 10 || this->header.point_format == 9 || this->header.point_format == 5 || this->header.point_format == 4);
+    return (this->dataFileHeader.point_format == 10 || this->dataFileHeader.point_format == 9 || this->dataFileHeader.point_format == 5 || this->dataFileHeader.point_format == 4);
 }
 
 
@@ -464,16 +463,16 @@ bool LasFile::readVLR(qint64 iVLR, LasVLR &vlr)
     qint64 i;
 
     vlr.destroy();
-    if (iVLR < 0 || this->header.number_of_vlrs <= iVLR) return false;
+    if (iVLR < 0 || this->dataFileHeader.number_of_vlrs <= iVLR) return false;
 
-    vlrOffset = this->header.headerSize - sizeof(LasVLRHeader);
+    vlrOffset = this->dataFileHeader.headerSize - sizeof(LasVLRHeader);
     i = -1;
     while (i < iVLR && !error)
     {
         vlrOffset += vlr.header.recordLength + sizeof(LasVLRHeader);
-        error = !this->file.seek(vlrOffset);
+        error = !this->dataFile.seek(vlrOffset);
         if (!error)
-            error = (this->file.read(reinterpret_cast<char*>(&vlr), sizeof(LasVLRHeader)) != sizeof(LasVLRHeader));
+            error = (this->dataFile.read(reinterpret_cast<char*>(&vlr), sizeof(LasVLRHeader)) != sizeof(LasVLRHeader));
         i++;
     }
 
@@ -481,7 +480,7 @@ bool LasFile::readVLR(qint64 iVLR, LasVLR &vlr)
     {
         // read VLR data
         vlr.data = new char[vlr.header.recordLength];
-        error = (file.read(vlr.data, vlr.header.recordLength) != vlr.header.recordLength);
+        error = (dataFile.read(vlr.data, vlr.header.recordLength) != vlr.header.recordLength);
     }
 
     return !error;
@@ -496,15 +495,15 @@ bool LasFile::appendVLR(LasVLR &vlr)
 {
     bool error;
 
-    if (!this->file.isWritable()) return false;
+    if (!this->dataFile.isWritable()) return false;
 
-    error = (this->file.write(reinterpret_cast<char*>(&vlr.header), sizeof(LasVLRHeader)) != sizeof(LasVLRHeader));
+    error = (this->dataFile.write(reinterpret_cast<char*>(&vlr.header), sizeof(LasVLRHeader)) != sizeof(LasVLRHeader));
     if (!error)
-        error = (this->file.write(vlr.data, vlr.header.recordLength) != vlr.header.recordLength);
+        error = (this->dataFile.write(vlr.data, vlr.header.recordLength) != vlr.header.recordLength);
     if (!error)
     {
-        this->header.number_of_vlrs++;
-        this->header.offset_to_point_data += sizeof(LasVLRHeader) + vlr.header.recordLength;
+        this->dataFileHeader.number_of_vlrs++;
+        this->dataFileHeader.offset_to_point_data += sizeof(LasVLRHeader) + vlr.header.recordLength;
     }
 
     this->headerChanged = true;
@@ -525,21 +524,21 @@ bool LasFile::readPoint(qint64 iPoint, LasPoint &lasPoint)
     bool error = true;
 
     lasPoint.destroy();
-    if (!this->file.isOpen()) return false;
-    if (this->header.number_of_points <= quint64(iPoint)) return false;
+    if (!this->dataFile.isOpen()) return false;
+    if (this->dataFileHeader.number_of_points <= quint64(iPoint)) return false;
 
-    if (this->cache == nullptr)
+    if (this->cacheData == nullptr)
     {
         // there is no cache, direct reading from a file
-        buf = new char[this->header.point_record_length]; // temporary cache for one record
-        recordOffset = qint64(this->header.offset_to_point_data + quint64(iPoint) * this->header.point_record_length);
-        if (this->file.seek(recordOffset))
+        buf = new char[this->dataFileHeader.point_record_length]; // temporary cache for one record
+        recordOffset = qint64(this->dataFileHeader.offset_to_point_data + quint64(iPoint) * this->dataFileHeader.point_record_length);
+        if (this->dataFile.seek(recordOffset))
         {
-            if (this->file.read(reinterpret_cast<char*>(buf), this->header.point_record_length) == this->header.point_record_length)
+            if (this->dataFile.read(reinterpret_cast<char*>(buf), this->dataFileHeader.point_record_length) == this->dataFileHeader.point_record_length)
             {
-                point_from_buf_fn(buf, lasPoint);
+                pointFromBufFn(buf, lasPoint);
                 decodeExtraData(buf, lasPoint);
-                lasPoint.unscaleCoordinates(this->header.offset_x, this->header.offset_y, this->header.offset_z, this->header.scale_x, this->header.scale_y, this->header.scale_z);
+                lasPoint.unscaleCoordinates(this->dataFileHeader.offset_x, this->dataFileHeader.offset_y, this->dataFileHeader.offset_z, this->dataFileHeader.scale_x, this->dataFileHeader.scale_y, this->dataFileHeader.scale_z);
                 error = false;
             }
         }
@@ -557,9 +556,9 @@ bool LasFile::readPoint(qint64 iPoint, LasPoint &lasPoint)
         if (!error)
         {
             // load point from cache
-            recordOffset = qint64(iPoint - this->cacheFirstRecord) * this->header.point_record_length;
-            point_from_buf_fn(this->cache + recordOffset, lasPoint);
-            lasPoint.unscaleCoordinates(this->header.offset_x, this->header.offset_y, this->header.offset_z, this->header.scale_x, this->header.scale_y, this->header.scale_z);
+            recordOffset = qint64(iPoint - this->cacheFirstRecord) * this->dataFileHeader.point_record_length;
+            pointFromBufFn(this->cacheData + recordOffset, lasPoint);
+            lasPoint.unscaleCoordinates(this->dataFileHeader.offset_x, this->dataFileHeader.offset_y, this->dataFileHeader.offset_z, this->dataFileHeader.scale_x, this->dataFileHeader.scale_y, this->dataFileHeader.scale_z);
         }
     }
 
@@ -575,29 +574,29 @@ bool LasFile::appendPoint(char *buf)
 {
     bool error = false;
 
-    if (!this->file.isWritable() || this->cache == nullptr) return false;
+    if (!this->dataFile.isWritable() || this->cacheData == nullptr) return false;
 
     this->cacheChanged = true;
     if (this->cacheFirstRecord < 0)
     {
-        memcpy(this->cache, buf, this->header.point_record_length);
-        this->cacheFirstRecord = qint64(this->header.number_of_points);
-        this->cacheLastRecord = qint64(this->header.number_of_points);
-        this->header.number_of_points++;
+        memcpy(this->cacheData, buf, this->dataFileHeader.point_record_length);
+        this->cacheFirstRecord = qint64(this->dataFileHeader.number_of_points);
+        this->cacheLastRecord = qint64(this->dataFileHeader.number_of_points);
+        this->dataFileHeader.number_of_points++;
     }
     else
     {
         this->cacheLastRecord++;
-        qint64 cache_offset = (this->cacheLastRecord - this->cacheFirstRecord) * this->header.point_record_length;
-        memcpy(this->cache + cache_offset, buf, this->header.point_record_length);
-        this->header.number_of_points++;
+        qint64 cache_offset = (this->cacheLastRecord - this->cacheFirstRecord) * this->dataFileHeader.point_record_length;
+        memcpy(this->cacheData + cache_offset, buf, this->dataFileHeader.point_record_length);
+        this->dataFileHeader.number_of_points++;
         if (this->cacheNumberOfRecords <= (this->cacheLastRecord - this->cacheFirstRecord + 1))
         {
             // cache full, write to the output las-file
             error = !writePointCache();
             this->cacheFirstRecord = -1;
             this->cacheLastRecord = -1;
-            memset(this->cache, 0, size_t(this->cacheLength));
+            memset(this->cacheData, 0, size_t(this->cacheLength));
         }
     }
 
@@ -616,33 +615,33 @@ bool LasFile::appendPoint(LasPoint &lasPoint, bool scaleCoordinates)
 {
     bool error = false;
 
-    if (!this->file.isWritable() || this->cache == nullptr) return false;
+    if (!this->dataFile.isWritable() || this->cacheData == nullptr) return false;
 
-    if (scaleCoordinates) lasPoint.scaleCoordinates(this->header.offset_x, this->header.offset_y, this->header.offset_z, this->header.scale_x, this->header.scale_y, this->header.scale_z);
+    if (scaleCoordinates) lasPoint.scaleCoordinates(this->dataFileHeader.offset_x, this->dataFileHeader.offset_y, this->dataFileHeader.offset_z, this->dataFileHeader.scale_x, this->dataFileHeader.scale_y, this->dataFileHeader.scale_z);
 
     this->cacheChanged = true;
     if (this->cacheFirstRecord < 0)
     {
-        this->cacheFirstRecord = qint64(this->header.number_of_points);
-        this->cacheLastRecord = qint64(this->header.number_of_points);
-        point_to_buf_fn(lasPoint, this->cache);
-        encodeExtraData(lasPoint, this->cache);
-        this->header.number_of_points++;
+        this->cacheFirstRecord = qint64(this->dataFileHeader.number_of_points);
+        this->cacheLastRecord = qint64(this->dataFileHeader.number_of_points);
+        pointToBufFn(lasPoint, this->cacheData);
+        encodeExtraData(lasPoint, this->cacheData);
+        this->dataFileHeader.number_of_points++;
     }
     else
     {
         this->cacheLastRecord++;
-        qint64 cache_offset = (this->cacheLastRecord - this->cacheFirstRecord) * this->header.point_record_length;
-        point_to_buf_fn(lasPoint, this->cache + cache_offset);
-        encodeExtraData(lasPoint, this->cache + cache_offset);
-        this->header.number_of_points++;
+        qint64 cache_offset = (this->cacheLastRecord - this->cacheFirstRecord) * this->dataFileHeader.point_record_length;
+        pointToBufFn(lasPoint, this->cacheData + cache_offset);
+        encodeExtraData(lasPoint, this->cacheData + cache_offset);
+        this->dataFileHeader.number_of_points++;
         if (this->cacheNumberOfRecords <= (this->cacheLastRecord - this->cacheFirstRecord + 1))
         {
             // cache full, write to the output las-file
             error = !writePointCache();
             this->cacheFirstRecord = -1;
             this->cacheLastRecord = -1;
-            memset(this->cache, 0, size_t(this->cacheLength));
+            memset(this->cacheData, 0, size_t(this->cacheLength));
         }
     }
 
@@ -663,8 +662,8 @@ bool LasFile::appendPoints(LasFile &las)
     qint64 nPoints;
     LasPoint lasPoint;
 
-    if (0 < this->header.number_of_evlrs) return false;
-    if (las.header.point_format != this->header.point_format || las.header.point_record_length != this->header.point_record_length) return false;
+    if (0 < this->dataFileHeader.number_of_evlrs) return false;
+    if (las.dataFileHeader.point_format != this->dataFileHeader.point_format || las.dataFileHeader.point_record_length != this->dataFileHeader.point_record_length) return false;
 
     nPoints = qint64(las.getNumberOfPoints());
     for(iPoint=0; iPoint<nPoints && !error; iPoint++)
@@ -993,9 +992,9 @@ void LasFile::decodeExtraData(char *buf, LasPoint &lasPoint)
     quint32 standardRecordLength;
 
     standardRecordLength = getStandardPointRecordLength();
-    if (standardRecordLength < this->header.point_record_length)
+    if (standardRecordLength < this->dataFileHeader.point_record_length)
     {
-        lasPoint.extraDataLength = standardRecordLength - this->header.point_record_length;
+        lasPoint.extraDataLength = standardRecordLength - this->dataFileHeader.point_record_length;
         lasPoint.extraData= new char[lasPoint.extraDataLength];
         memcpy(lasPoint.extraData, buf + standardRecordLength, lasPoint.extraDataLength);
     }
@@ -1275,10 +1274,10 @@ bool LasFile::writeHeader()
 {
     bool error = false;
 
-    if (this->file.isOpen() && this->file.isWritable() && this->headerChanged)
+    if (this->dataFile.isOpen() && this->dataFile.isWritable() && this->headerChanged)
     {
-        error = !this->file.seek(0);
-        if (!error) error = (this->file.write(reinterpret_cast<char*>(&this->header), this->header.headerSize) != this->header.headerSize);
+        error = !this->dataFile.seek(0);
+        if (!error) error = (this->dataFile.write(reinterpret_cast<char*>(&this->dataFileHeader), this->dataFileHeader.headerSize) != this->dataFileHeader.headerSize);
         this->headerChanged = error;
     }
 
@@ -1297,32 +1296,32 @@ bool LasFile::updateHeader()
 
     if (!this->pointsChanged) return true;
 
-    this->header.x0 = DBL_MAX;
-    this->header.x1 = -DBL_MAX;
-    this->header.y0 = DBL_MAX;
-    this->header.y1 = -DBL_MAX;
-    this->header.z0 = DBL_MAX;
-    this->header.z1 = -DBL_MAX;
+    this->dataFileHeader.x0 = DBL_MAX;
+    this->dataFileHeader.x1 = -DBL_MAX;
+    this->dataFileHeader.y0 = DBL_MAX;
+    this->dataFileHeader.y1 = -DBL_MAX;
+    this->dataFileHeader.z0 = DBL_MAX;
+    this->dataFileHeader.z1 = -DBL_MAX;
 
     for(int i = 0; i < LAS14_NUMBER_OF_POINTS_BY_RETURN_FIELDS; i++)
-        this->header.number_of_points_by_return[i] = 0;
+        this->dataFileHeader.number_of_points_by_return[i] = 0;
 
-    for(qint64 iPoint=0; iPoint<qint64(this->header.number_of_points) && !error; iPoint++)
+    for(qint64 iPoint=0; iPoint<qint64(this->dataFileHeader.number_of_points) && !error; iPoint++)
     {
         error = !readPoint(iPoint, p);
         if (!error)
         {
-            if (p.x < this->header.x0) this->header.x0 = p.x;
-            if (this->header.x1 < p.x) this->header.x1 = p.x;
-            if (p.y < this->header.y0) this->header.y0 = p.y;
-            if (this->header.y1 < p.y) this->header.y1 = p.y;
-            if (p.z < this->header.z0) this->header.z0 = p.z;
-            if (this->header.z1 < p.z) this->header.z1 = p.z;
+            if (p.x < this->dataFileHeader.x0) this->dataFileHeader.x0 = p.x;
+            if (this->dataFileHeader.x1 < p.x) this->dataFileHeader.x1 = p.x;
+            if (p.y < this->dataFileHeader.y0) this->dataFileHeader.y0 = p.y;
+            if (this->dataFileHeader.y1 < p.y) this->dataFileHeader.y1 = p.y;
+            if (p.z < this->dataFileHeader.z0) this->dataFileHeader.z0 = p.z;
+            if (this->dataFileHeader.z1 < p.z) this->dataFileHeader.z1 = p.z;
 
             if (p.returnNumber <= LAS14_NUMBER_OF_POINTS_BY_RETURN_FIELDS && 0 < p.returnNumber)
-                this->header.number_of_points_by_return[p.returnNumber - 1]++;
+                this->dataFileHeader.number_of_points_by_return[p.returnNumber - 1]++;
             else
-                this->header.number_of_points_by_return[LAS14_NUMBER_OF_POINTS_BY_RETURN_FIELDS-1]++;
+                this->dataFileHeader.number_of_points_by_return[LAS14_NUMBER_OF_POINTS_BY_RETURN_FIELDS-1]++;
         }
     }
 
@@ -1375,10 +1374,10 @@ bool LasFile::copyEVRLs(LasFile &lasTemplate)
  */
 bool LasFile::allocatePointCache(qint64 pointCacheNumberOfRecords, qint64 pointCacheOffset)
 {
-    if (this->cache != nullptr)
+    if (this->cacheData != nullptr)
     {
-        delete [] this->cache;
-        this->cache = nullptr;
+        delete [] this->cacheData;
+        this->cacheData = nullptr;
     }
 
     if (0 < pointCacheNumberOfRecords)
@@ -1391,9 +1390,9 @@ bool LasFile::allocatePointCache(qint64 pointCacheNumberOfRecords, qint64 pointC
         this->cacheFirstRecord = -1;
         this->cacheLastRecord = -1;
         this->cacheNumberOfRecords = pointCacheNumberOfRecords;
-        this->cacheLength = this->header.point_record_length * pointCacheNumberOfRecords;
-        this->cache = new char[quint64(this->cacheLength)];
-        memset(this->cache, 0, size_t(this->cacheLength));
+        this->cacheLength = this->dataFileHeader.point_record_length * pointCacheNumberOfRecords;
+        this->cacheData = new char[quint64(this->cacheLength)];
+        memset(this->cacheData, 0, size_t(this->cacheLength));
         this->cacheOffset = pointCacheOffset;
     }
     else
@@ -1402,7 +1401,7 @@ bool LasFile::allocatePointCache(qint64 pointCacheNumberOfRecords, qint64 pointC
         this->cacheLastRecord = -1;
         this->cacheNumberOfRecords = 0;
         this->cacheLength = 0;
-        this->cache = nullptr;
+        this->cacheData = nullptr;
         this->cacheOffset = 0;
     }
 
@@ -1421,15 +1420,15 @@ bool LasFile::writePointCache()
     qint64 nRecords, nLength;
     bool error = false;
 
-    if (this->cache == nullptr) return true;
+    if (this->cacheData == nullptr) return true;
 
-    if (this->cacheChanged && 0 <= this->cacheFirstRecord && 0 < this->header.number_of_points)
+    if (this->cacheChanged && 0 <= this->cacheFirstRecord && 0 < this->dataFileHeader.number_of_points)
     {
-        if (this->file.seek(this->header.offset_to_point_data + this->cacheFirstRecord * this->header.point_record_length))
+        if (this->dataFile.seek(this->dataFileHeader.offset_to_point_data + this->cacheFirstRecord * this->dataFileHeader.point_record_length))
         {
             nRecords = this->cacheLastRecord - this->cacheFirstRecord + 1;
-            nLength = nRecords * this->header.point_record_length;
-            error = (this->file.write(this->cache, nLength) != nLength);
+            nLength = nRecords * this->dataFileHeader.point_record_length;
+            error = (this->dataFile.write(this->cacheData, nLength) != nLength);
             this->cacheChanged = error;
         }
     }
@@ -1450,26 +1449,26 @@ bool LasFile::readPointCache(qint64 iPoint)
     qint64 nRecords, nLength;
     bool error = true;
 
-    if (!this->file.isReadable() || this->cache == nullptr) return false;
+    if (!this->dataFile.isReadable() || this->cacheData == nullptr) return false;
 
-    if (0 <= iPoint && quint64(iPoint) < this->header.number_of_points)
+    if (0 <= iPoint && quint64(iPoint) < this->dataFileHeader.number_of_points)
     {
         this->cacheFirstRecord = iPoint - this->cacheOffset;
         if (this->cacheFirstRecord < 0) this->cacheFirstRecord = 0;
         this->cacheLastRecord = this->cacheFirstRecord + this->cacheNumberOfRecords - 1;
-        if (this->header.number_of_points <= quint64(this->cacheLastRecord))
+        if (this->dataFileHeader.number_of_points <= quint64(this->cacheLastRecord))
         {
-            this->cacheLastRecord = qint64(this->header.number_of_points) - 1;
+            this->cacheLastRecord = qint64(this->dataFileHeader.number_of_points) - 1;
             this->cacheFirstRecord = this->cacheLastRecord - this->cacheNumberOfRecords + 1;
             if (this->cacheFirstRecord < 0) this->cacheFirstRecord = 0;
         }
         if (this->cacheFirstRecord <= iPoint && iPoint <= this->cacheLastRecord)
         {
-            if (file.seek(this->header.offset_to_point_data + this->cacheFirstRecord * this->header.point_record_length))
+            if (dataFile.seek(this->dataFileHeader.offset_to_point_data + this->cacheFirstRecord * this->dataFileHeader.point_record_length))
             {
                 nRecords = this->cacheLastRecord - this->cacheFirstRecord + 1;
-                nLength = nRecords * this->header.point_record_length;
-                error = (this->file.read(this->cache, nLength) != nLength);
+                nLength = nRecords * this->dataFileHeader.point_record_length;
+                error = (this->dataFile.read(this->cacheData, nLength) != nLength);
                 this->cacheChanged = error;
             }
         }
