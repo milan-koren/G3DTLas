@@ -4,17 +4,16 @@
 #include <QtCore>
 #include <QFile>
 #include "g3dtlas_global.h"
-#include "lasvlr.h"
+#include "VLR/lasvlr.h"
 #include "lasevlr.h"
 #include "lasfileheader.h"
-#include "laspoint.h"
+#include "Point/laspoint.h"
 
 
 /*!
  * *****************************************************************
  *                               G3DTLas
  * *****************************************************************
- * \file lasfile.h
  *
  * \brief LasFile class declaration.
  *
@@ -48,26 +47,26 @@
 class G3DTLAS_EXPORT LasFile
 {
 protected:
-    static const quint16 StandardPointRecordLength[LAS_NUMBER_OF_POINT_RECORD_DATA_FORMATS ]; //!< array of the standard lenghts of point records
+    static const quint16 StandardPointRecordLength[LAS_NUMBER_OF_POINT_RECORD_DATA_FORMATS]; //!< array of the standard lenghts of point records
 
-    QFile file;                     //!< data file
-    LasFileHeader14 header;         //!< file header
-    bool headerChanged = false;     //!< file header change flag
+    QFile dataFile;                     //!< data file
+    LasFileHeader14 dataFileHeader;     //!< file header
+    bool headerChanged = false;         //!< file header change flag
 
     typedef void (*FPointFromBufferFunction)(char *buf, LasPoint &lasPoint); //!< point record decoder template
     static const FPointFromBufferFunction PointFromBufferFunctions[LAS_NUMBER_OF_POINT_RECORD_DATA_FORMATS]; //!< array of point decoders
-    FPointFromBufferFunction point_from_buf_fn = LasFile::decodePointNull; //!< pointer to current point record decoder
+    FPointFromBufferFunction pointFromBufFn = LasFile::decodePointNull; //!< pointer to current point record decoder
 
     typedef void (*FPointToBufferFunction)(LasPoint &lasPoint, char *buf); //!< point record encoder template
     static const FPointToBufferFunction PointToBufferFunctions[LAS_NUMBER_OF_POINT_RECORD_DATA_FORMATS]; //!< array of point encoders
-    FPointToBufferFunction point_to_buf_fn = LasFile::encodePointNull; //!< pointer to current point record encoder
+    FPointToBufferFunction pointToBufFn = LasFile::encodePointNull; //!< pointer to current point record encoder
 
     qint64 cacheFirstRecord = -1;   //!< index of the first record in cache memory
     qint64 cacheLastRecord = -1;    //!< index of the last record in cache
     qint64 cacheNumberOfRecords = 0; //!< number of records stored in cache
     qint64 cacheLength = 0;         //!< the size of allocated cache in bytes (== cacheNRecords * header.pointRecordLength)
     qint64 cacheOffset = 0;         //!< offset of the first requested record in cache, used in ReadCache
-    char *cache = nullptr;          //!< pointer to internal cache
+    char *cacheData = nullptr;      //!< pointer to internal cache
     bool cacheChanged = false;      //!< cache change flag
     bool pointsChanged = false;     //!< file change flag
 
@@ -75,10 +74,14 @@ public:
     LasFile();
     ~LasFile();
 
-    bool open(QString fileName, qint64 pointCacheNRecords = LAS_DEFAULT_CACHE_NRECORDS, qint64 pointCacheOffset = LAS_DEFAULT_CACHE_OFFSET);
+    bool open(QString fileName,
+              qint64 pointCacheNRecords = LAS_DEFAULT_CACHE_NRECORDS,
+              qint64 pointCacheOffset = LAS_DEFAULT_CACHE_OFFSET);
     bool close();
     bool isOpen();
-    bool createCompatible(QString fileName, LasFile &lasTemplate, qint64 pointCacheNRecords = LAS_DEFAULT_CACHE_NRECORDS, qint64 pointCacheOffset = LAS_DEFAULT_CACHE_OFFSET);
+    bool createCompatible(QString fileName, LasFile &lasTemplate,
+                          qint64 pointCacheNRecords = LAS_DEFAULT_CACHE_NRECORDS,
+                          qint64 pointCacheOffset = LAS_DEFAULT_CACHE_OFFSET);
 
     QString getFileSignature();
     quint8 getMajorVersion();
