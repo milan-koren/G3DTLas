@@ -1,17 +1,16 @@
 #ifndef G3DTLAS_H
 #define G3DTLAS_H
 
-#include "lasvlr.h"
+#include "VLR/lasvlr.h"
 #include "lasevlr.h"
 #include "lasfileheader.h"
-#include "laspoint.h"
+#include "Point/laspoint.h"
 #include "lasfile.h"
 
 /*!
  * *****************************************************************
  *                               G3DTLas
  * *****************************************************************
- * \file g3dtlas.h
  *
  * \brief Main include file.
  *
