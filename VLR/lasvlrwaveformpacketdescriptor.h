@@ -1,13 +1,11 @@
 #ifndef LASVLRWAVEFORMPACKETDESCRIPTOR_H
 #define LASVLRWAVEFORMPACKETDESCRIPTOR_H
 
-#include <QtCore>
-#include "g3dtlas_global.h"
-
 /*!
  * *****************************************************************
  *                               G3DTLas
  * *****************************************************************
+ * \file lasvlrwaveformpacketdescriptor.h
  *
  * \brief Waveform Packet Descriptor. Optional VLR defined by LAS Specification.
  *
@@ -22,6 +20,8 @@
  * https://joinup.ec.europa.eu/collection/eupl
  * *****************************************************************
  */
+
+#include "g3dtlas_global.h"
 
 #pragma pack(1)
 
