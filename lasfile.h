@@ -1,19 +1,11 @@
 #ifndef LASFILE_H
 #define LASFILE_H
 
-#include <QtCore>
-#include <QFile>
-#include "g3dtlas_global.h"
-#include "VLR/lasvlr.h"
-#include "lasevlr.h"
-#include "lasfileheader.h"
-#include "Point/laspoint.h"
-
-
 /*!
  * *****************************************************************
  *                               G3DTLas
  * *****************************************************************
+ * \file lasfile.h
  *
  * \brief LasFile class declaration.
  *
@@ -28,6 +20,12 @@
  * *****************************************************************
  */
 
+#include <QFile>
+#include "g3dtlas_global.h"
+#include "Point/laspoint.h"
+#include "VLR/lasvlr.h"
+#include "EVLR/lasevlr.h"
+#include "Fileheader/lasfileheader14.h"
 
 #define LAS_DEFAULT_CACHE_NRECORDS (1024*1024)
 #define LAS_DEFAULT_CACHE_OFFSET (0)
