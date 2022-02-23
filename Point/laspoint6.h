@@ -1,16 +1,13 @@
 #ifndef LASPOINT6_H
 #define LASPOINT6_H
 
-#include <QtCore>
-#include "g3dtlas_global.h"
-
 /*!
  * *****************************************************************
  *                               G3DTLas
  * *****************************************************************
+ * \file laspoint6.h
  *
  * \brief Point Data Record Format 6
- * \remark size =
  *
  * \author M. Koren, milan.koren3@gmail.com
  * Source: https:\\github.com/milan-koren/G3DTLas
@@ -18,6 +15,8 @@
  * https://joinup.ec.europa.eu/collection/eupl
  * *****************************************************************
  */
+
+#include "g3dtlas_global.h"
 
 
 #pragma pack(1)
