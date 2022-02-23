@@ -1,13 +1,11 @@
 #ifndef LASVLRTEXTAREA_H
 #define LASVLRTEXTAREA_H
 
-#include <QtCore>
-#include "g3dtlas_global.h"
-
 /*!
  * *****************************************************************
  *                               G3DTLas
  * *****************************************************************
+ * \file lasvlrtextarea.h
  *
  * \brief Text area. Optional VLR defined by LAS Specification.
  *
@@ -22,5 +20,7 @@
  * https://joinup.ec.europa.eu/collection/eupl
  * *****************************************************************
  */
+
+#include "g3dtlas_global.h"
 
 #endif // LASVLRTEXTAREA_H
