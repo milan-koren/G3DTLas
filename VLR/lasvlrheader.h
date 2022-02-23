@@ -1,14 +1,11 @@
 #ifndef LASVLRHEADER_H
 #define LASVLRHEADER_H
 
-#include <QtCore>
-#include "g3dtlas_global.h"
-
-
 /*!
  * *****************************************************************
  *                               G3DTLas
  * *****************************************************************
+ * \file lasvlrheader.h
  *
  * \brief Header of variable-length record.
  *
@@ -19,11 +16,11 @@
  * *****************************************************************
  */
 
+#include "g3dtlas_global.h"
 
 #define LAS_VLR_RESERVED_LENGTH (2)
 #define LAS_VLR_USERID_LENGTH (16)
 #define LAS_VLR_DESCRIPTION_LENGTH (32)
-
 
 #pragma pack(1)
 
