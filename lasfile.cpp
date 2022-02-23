@@ -1,9 +1,8 @@
-#include "lasfile.h"
-
 /*!
  * *****************************************************************
  *                               G3DTLas
  * *****************************************************************
+ * \file lasfile.cpp
  *
  * \brief The implementation of the LasFile class.
  * \remark The class LasPoint is used to access and update data.
@@ -14,6 +13,8 @@
  * https://joinup.ec.europa.eu/collection/eupl
  * *****************************************************************
  */
+
+#include "lasfile.h"
 
 
 const quint16 LasFile::StandardPointRecordLength[LAS_NUMBER_OF_POINT_RECORD_DATA_FORMATS ] =
