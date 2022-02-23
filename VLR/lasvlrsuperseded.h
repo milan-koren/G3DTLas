@@ -1,13 +1,11 @@
 #ifndef LASVLRSUPERSEDED_H
 #define LASVLRSUPERSEDED_H
 
-#include <QtCore>
-#include "g3dtlas_global.h"
-
 /*!
  * *****************************************************************
  *                               G3DTLas
  * *****************************************************************
+ * \file lasvlrsuperseded.h
  *
  * \brief Superseded record. Optional VLR defined by LAS Specification.
  *
@@ -23,5 +21,7 @@
  * https://joinup.ec.europa.eu/collection/eupl
  * *****************************************************************
  */
+
+#include "g3dtlas_global.h"
 
 #endif // LASVLRSUPERSEDED_H
