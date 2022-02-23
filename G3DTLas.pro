@@ -12,14 +12,19 @@ CONFIG += c++11
 #DEFINES += QT_DISABLE_DEPRECATED_BEFORE=0x060000    # disables all the APIs deprecated before Qt 6.0.0
 
 SOURCES += \
+    EVLR/lasevlr.cpp \
+    Fileheader/lasfileheader14.cpp \
     Point/laspoint.cpp \
     VLR/lasvlr.cpp \
     VLR/lasvlrgeokeys.cpp \
-    lasevlr.cpp \
-    lasfile.cpp \
-    lasfileheader.cpp
+    lasfile.cpp
 
 HEADERS += \
+    EVLR/lasevlr.h \
+    Fileheader/lasfileheader11.h \
+    Fileheader/lasfileheader12.h \
+    Fileheader/lasfileheader13.h \
+    Fileheader/lasfileheader14.h \
     Point/laspoint.h \
     Point/laspoint0.h \
     Point/laspoint1.h \
@@ -32,6 +37,7 @@ HEADERS += \
     Point/laspoint7.h \
     Point/laspoint8.h \
     Point/laspoint9.h \
+    Point/laspointclassification.h \
     VLR/lasvlr.h \
     VLR/lasvlrclassificationlookup.h \
     VLR/lasvlrgeokeyentry.h \
@@ -43,9 +49,8 @@ HEADERS += \
     VLR/lasvlrwaveformpacketdescriptor.h \
     g3dtlas.h \
     g3dtlas_global.h \
-    lasevlr.h \
-    lasfile.h \
-    lasfileheader.h
+    lasdatatypes.h \
+    lasfile.h
 
 # Default rules for deployment.
 unix {
