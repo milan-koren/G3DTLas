@@ -1,13 +1,11 @@
 #ifndef LASVLRCLASSIFICATIONLOOKUP_H
 #define LASVLRCLASSIFICATIONLOOKUP_H
 
-#include <QtCore>
-#include "g3dtlas_global.h"
-
 /*!
  * *****************************************************************
  *                               G3DTLas
  * *****************************************************************
+ * \file lasvlrclassificationlookup.h
  *
  * \brief LASF classification lookup. Optional VLR defined by LAS Specification.
  *
@@ -23,6 +21,7 @@
  * *****************************************************************
  */
 
+#include "g3dtlas_global.h"
 
 #pragma pack(1)
 
