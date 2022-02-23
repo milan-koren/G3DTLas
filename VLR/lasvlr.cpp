@@ -1,9 +1,8 @@
-#include "lasvlr.h"
-
 /*!
  * *****************************************************************
  *                               G3DTLas
  * *****************************************************************
+ * \file lasvlr.cpp
  *
  * \brief The implemenation of the LasVLR class.
  *
@@ -13,6 +12,8 @@
  * https://joinup.ec.europa.eu/collection/eupl
  * *****************************************************************
  */
+
+#include "lasvlr.h"
 
 
 /*!
