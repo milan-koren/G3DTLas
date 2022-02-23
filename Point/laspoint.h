@@ -1,8 +1,25 @@
 #ifndef LASPOINT_H
 #define LASPOINT_H
 
-#include <QtCore>
+/*!
+ * *****************************************************************
+ *                               G3DTLas
+ * *****************************************************************
+ * \file laspoint.h
+ *
+ * \brief LAS point records.
+ * \remark Main class LasPoint.
+ *         Structures LasPoint0, LasPoint1, ... LasPoint10.
+ *
+ * \author M. Koren, milan.koren3@gmail.com
+ * Source: https:\\github.com/milan-koren/G3DTLas
+ * Licence: EUPL v. 1.2
+ * https://joinup.ec.europa.eu/collection/eupl
+ * *****************************************************************
+ */
+
 #include "g3dtlas_global.h"
+#include "laspointclassification.h"
 #include "laspoint0.h"
 #include "laspoint1.h"
 #include "laspoint2.h"
@@ -15,57 +32,8 @@
 #include "laspoint9.h"
 #include "laspoint10.h"
 
-/*!
- * *****************************************************************
- *                               G3DTLas
- * *****************************************************************
- *
- * \brief LAS point records.
- * \remark Main class LasPoint.
- *         Structures LasPoint0, LasPoint1, ... LasPoint10.
- *         Enumeration LasDataTypes.
- *
- * \author M. Koren, milan.koren3@gmail.com
- * Source: https:\\github.com/milan-koren/G3DTLas
- * Licence: EUPL v. 1.2
- * https://joinup.ec.europa.eu/collection/eupl
- * *****************************************************************
- */
-
-
-#define LAS_CLASS_NEVER_CLASSIFIED (0)
-#define LAS_CLASS_UNCLASSIFIED (1)
-#define LAS_CLASS_GROUND (2)
-#define LAS_CLASS_LOW_VEGETATION (3)
-#define LAS_CLASS_MEDIUM_VEGETATION (4)
-#define LAS_CLASS_HIGH_VEGETATION (5)
-#define LAS_CLASS_BUILDING (6)
-#define LAS_CLASS_LOW_NOISE (7)
-#define LAS_CLASS_WATER (9)
-#define LAS_CLASS_BRIDGE (17)
-#define LAS_CLASS_HIGH_NOISE (18)
-
 #define LAS_NUMBER_OF_POINT_RECORD_DATA_FORMATS (11)
 #define LAS_NUMBER_OF_DATA_TYPES (11)
-
-
-/*!
- * \brief The LasDataTypes enumeration by LAS standard.
- */
-enum LasDataTypes
-{
-    UNKNOWN = 0,
-    UINT8 = 1,
-    INT8 = 2,
-    UINT16 = 3,
-    INT16 = 4,
-    UINT32 = 5,
-    INT32 = 6,
-    UINT64 = 7,
-    INT64 = 8,
-    FLOAT = 9,
-    DOUBLE = 10
-};
 
 
 /*!
