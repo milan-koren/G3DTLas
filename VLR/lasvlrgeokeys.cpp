@@ -1,9 +1,8 @@
-#include "lasvlrgeokeys.h"
-
 /*!
  * *****************************************************************
  *                               G3DTLas
  * *****************************************************************
+ * \file lasvlrgeokeys.cpp
  *
  * \brief The implemenation of the LasVLRGeoKeys class.
  *
@@ -13,6 +12,8 @@
  * https://joinup.ec.europa.eu/collection/eupl
  * *****************************************************************
  */
+
+#include "lasvlrgeokeys.h"
 
 
 /*!
