@@ -1,21 +1,11 @@
 #ifndef LASVLR_H
 #define LASVLR_H
 
-#include <QtCore>
-#include "g3dtlas_global.h"
-#include "lasvlrheader.h"
-#include "lasvlrgeokeyentry.h"
-#include "lasvlrgeokeys.h"
-#include "lasvlrclassificationlookup.h"
-#include "lasvlrtextarea.h"
-#include "lasvlrpointextrabytes.h"
-#include "lasvlrsuperseded.h"
-#include "lasvlrwaveformpacketdescriptor.h"
-
 /*!
  * *****************************************************************
  *                               G3DTLas
  * *****************************************************************
+ * \file lasvlr.h
  *
  * \brief Variable-length record.
  * \remark Main LasVLR class.
@@ -32,6 +22,16 @@
  * https://joinup.ec.europa.eu/collection/eupl
  * *****************************************************************
  */
+
+#include "g3dtlas_global.h"
+#include "lasvlrheader.h"
+#include "lasvlrgeokeyentry.h"
+#include "lasvlrgeokeys.h"
+#include "lasvlrclassificationlookup.h"
+#include "lasvlrtextarea.h"
+#include "lasvlrpointextrabytes.h"
+#include "lasvlrsuperseded.h"
+#include "lasvlrwaveformpacketdescriptor.h"
 
 
 /*!
