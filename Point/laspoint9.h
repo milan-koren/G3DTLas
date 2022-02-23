@@ -1,13 +1,11 @@
 #ifndef LASPOINT9_H
 #define LASPOINT9_H
 
-#include <QtCore>
-#include "g3dtlas_global.h"
-
 /*!
  * *****************************************************************
  *                               G3DTLas
  * *****************************************************************
+ * \file laspoint9.h
  *
  * \brief Point Data Record Format 9
  *
@@ -17,6 +15,8 @@
  * https://joinup.ec.europa.eu/collection/eupl
  * *****************************************************************
  */
+
+#include "g3dtlas_global.h"
 
 
 #pragma pack(1)
