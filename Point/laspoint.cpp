@@ -1,9 +1,8 @@
-#include "laspoint.h"
-
 /*!
  * *****************************************************************
  *                               G3DTLas
  * *****************************************************************
+ * \file laspoint.cpp
  *
  * \brief The implemenation of the LasPoint class.
  *
@@ -13,6 +12,8 @@
  * https://joinup.ec.europa.eu/collection/eupl
  * *****************************************************************
  */
+
+#include "laspoint.h"
 
 
 /*!
