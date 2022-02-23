@@ -1,13 +1,11 @@
 #ifndef LASVLRPOINTEXTRABYTES_H
 #define LASVLRPOINTEXTRABYTES_H
 
-#include <QtCore>
-#include "g3dtlas_global.h"
-
 /*!
  * *****************************************************************
  *                               G3DTLas
  * *****************************************************************
+ * \file lasvlrpointextrabytes.h
  *
  * \brief Point extra bytes. Optional VLR defined by LAS Specification.
  *
@@ -22,6 +20,8 @@
  * *****************************************************************
  */
 
+#include "g3dtlas_global.h"
+
 #pragma pack(1)
 
 /*!
@@ -30,25 +30,25 @@
  */
 struct LasVLRPointExtraBytes
 {
-    uchar reserved[2];
-    uchar dataType;         //!< defined by enum LasDataTypes
-    uchar options;          //!< bit 0: nodata field is relevant
+    quint8 reserved[2];
+    quint8 dataType;        //!< defined by enum LasDataTypes
+    quint8 options;         //!< bit 0: nodata field is relevant
                             //!< bit 1: minValue is relevant
                             //!< bit 2: maxValue is relevant
                             //!< bit 3: scale is relevant
                             //!< bit 4: offset Value is relevant
     char name[32];
-    uchar unused[4];
+    quint8 unused[4];
     char nodata[8];
-    uchar deprecated1[16];
-    uchar minValue[8];
-    uchar deprecated2[16];
+    quint8 deprecated1[16];
+    char minValue[8];
+    quint8 deprecated2[16];
     char maxValue[8];
-    uchar deprecated3[16];
+    quint8 deprecated3[16];
     double scale;
-    uchar deprecated4[16];
+    quint8 deprecated4[16];
     double offset;
-    uchar deprecated5[16];
+    quint8 deprecated5[16];
     char description[32];
 };
 
