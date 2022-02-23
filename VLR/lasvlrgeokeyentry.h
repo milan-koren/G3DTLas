@@ -1,13 +1,11 @@
 #ifndef LASVLRGEOKEYENTRY_H
 #define LASVLRGEOKEYENTRY_H
 
-#include <QtCore>
-#include "g3dtlas_global.h"
-
 /*!
  * *****************************************************************
  *                               G3DTLas
  * *****************************************************************
+ * \file lasvlrgeokeyentry.h
  *
  * \brief Key entry of GeoKeys tag.
  *
@@ -18,6 +16,7 @@
  * *****************************************************************
  */
 
+#include "g3dtlas_global.h"
 
 /*!
  * *****************************************************************
