@@ -1,16 +1,11 @@
 #ifndef G3DTLAS_H
 #define G3DTLAS_H
 
-#include "VLR/lasvlr.h"
-#include "lasevlr.h"
-#include "lasfileheader.h"
-#include "Point/laspoint.h"
-#include "lasfile.h"
-
 /*!
  * *****************************************************************
  *                               G3DTLas
  * *****************************************************************
+ * \file g3dtlas.h
  *
  * \brief Main include file.
  *
@@ -20,5 +15,12 @@
  * https://joinup.ec.europa.eu/collection/eupl
  * *****************************************************************
  */
+
+#include "lasdatatypes.h"
+#include "Point/laspoint.h"
+#include "VLR/lasvlr.h"
+#include "EVLR/lasevlr.h"
+#include "Fileheader/lasfileheader14.h"
+#include "lasfile.h"
 
 #endif // G3DTLAS_H
