@@ -1,14 +1,11 @@
 #ifndef LASVLRGEOKEYS_H
 #define LASVLRGEOKEYS_H
 
-#include <QtCore>
-#include "g3dtlas_global.h"
-#include "lasvlrgeokeyentry.h"
-
 /*!
  * *****************************************************************
  *                               G3DTLas
  * *****************************************************************
+ * \file lasvlrgeokeys.h
  *
  * \brief The directory of geo keys.
  *
@@ -19,6 +16,8 @@
  * *****************************************************************
  */
 
+#include "g3dtlas_global.h"
+#include "lasvlrgeokeyentry.h"
 
 /*!
  * \brief The LasGeoKeys class.
