@@ -1,12 +1,11 @@
 #ifndef G3DTLAS_GLOBAL_H
 #define G3DTLAS_GLOBAL_H
 
-#include <QtCore/qglobal.h>
-
 /*!
  * *****************************************************************
  *                               G3DTLas
  * *****************************************************************
+ * \file g3dtlas_global.h
  *
  * \brief System generated include file.
  *
@@ -16,6 +15,9 @@
  * https://joinup.ec.europa.eu/collection/eupl
  * *****************************************************************
  */
+
+#include <QtCore/qglobal.h>
+#include <QtCore>
 
 #if defined(G3DTLAS_LIBRARY)
 #  define G3DTLAS_EXPORT Q_DECL_EXPORT
